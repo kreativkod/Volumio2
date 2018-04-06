@@ -107,6 +107,7 @@ function CoreMusicLibrary (commandRouter) {
         self.browseSources = [{albumart: '/albumart?sourceicon=music_service/mpd/favouritesicon.png', name: 'Favourites', uri: 'favourites',plugin_type:'',plugin_name:''},
             {albumart: '/albumart?sourceicon=music_service/mpd/playlisticon.svg', name: 'Playlists', uri: 'playlists',plugin_type:'music_service',plugin_name:'mpd'},
             {albumart: '/albumart?sourceicon=music_service/mpd/musiclibraryicon.svg', name: 'Music Library', uri: 'music-library',plugin_type:'music_service',plugin_name:'mpd'},
+            {albumart: '/albumart?sourceicon=music_service/mpd/artisticon.png',name: 'Composers', uri: 'composers://',plugin_type:'music_service',plugin_name:'mpd'},
             {albumart: '/albumart?sourceicon=music_service/mpd/artisticon.png',name: 'Artists', uri: 'artists://',plugin_type:'music_service',plugin_name:'mpd'},
             {albumart: '/albumart?sourceicon=music_service/mpd/albumicon.png',name: 'Albums', uri: 'albums://',plugin_type:'music_service',plugin_name:'mpd'},
             {albumart: '/albumart?sourceicon=music_service/mpd/genreicon.png',name: 'Genres', uri: 'genres://',plugin_type:'music_service',plugin_name:'mpd'}
@@ -521,6 +522,9 @@ CoreMusicLibrary.prototype.updateBrowseSourcesLang = function() {
 				break;
 			case 'music-library':
 				self.browseSources[i].name = self.commandRouter.getI18nString('COMMON.MUSIC_LIBRARY');
+				break;
+			case 'composers://':
+				self.browseSources[i].name = self.commandRouter.getI18nString('COMMON.COMPOSERS');
 				break;
 			case 'artists://':
 				self.browseSources[i].name = self.commandRouter.getI18nString('COMMON.ARTISTS');
