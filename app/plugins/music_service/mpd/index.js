@@ -1206,6 +1206,7 @@ ControllerMpd.prototype.lsInfo = function (uri) {
                 prev = '/';
                 var browseSources = [{albumart: '/albumart?sourceicon=music_service/mpd/favouritesicon.png', title: self.commandRouter.getI18nString('COMMON.FAVOURITES'), uri: 'favourites', type: 'title'},
                     {albumart: '/albumart?sourceicon=music_service/mpd/playlisticon.svg', title: self.commandRouter.getI18nString('COMMON.PLAYLISTS'), uri: 'playlists', type: 'title'},
+                    {albumart: '/albumart?sourceicon=music_service/mpd/artisticon.png',title: self.commandRouter.getI18nString('COMMON.COMPOSERS'), uri: 'composers://', type: 'title'},
                     {albumart: '/albumart?sourceicon=music_service/mpd/artisticon.png',title: self.commandRouter.getI18nString('COMMON.ARTISTS'), uri: 'artists://', type: 'title'},
                     {albumart: '/albumart?sourceicon=music_service/mpd/albumicon.png',title: self.commandRouter.getI18nString('COMMON.ALBUMS'), uri: 'albums://', type: 'title'},
                     {albumart: '/albumart?sourceicon=music_service/mpd/genreicon.png',title: self.commandRouter.getI18nString('COMMON.GENRES'), uri: 'genres://', type: 'title'},
@@ -3267,15 +3268,15 @@ ControllerMpd.prototype.listComposers = function () {
     }
 
     var cmd = libMpd.cmd;
-	var artistlist = "artist";
-	var artistbegin = "Artist: ";
+	var artistlist = "composer";
+	var artistbegin = "Composer: ";
 
 	if (artistsort) {
 		artistlist = "albumartist";
 		artistbegin = "AlbumArtist: ";
 	}
 
-	self.clientMpd.sendCommand(cmd("list", [artistlist]), function (err, msg) {  //List artists
+	self.clientMpd.sendCommand(cmd("list", [artistlist]), function (err, msg) {  //List composers
 
         if(err)
             defer.reject(new Error('Cannot list artist'));
@@ -3298,8 +3299,8 @@ ControllerMpd.prototype.listComposers = function () {
                             type: 'folder',
                             title: artist,
                             albumart: albumart,
-                            uri: 'artists://' + codedArtists
-                        }
+                            uri: 'composers://' + codedArtists       //PW: when this one is changed, the script hangs when click composer - goes back to throwing broswe error when 'goto function' is added to
+                        }										     //     "An error occurred when browsing the folder" 	
 
                         response.navigation.lists[0].items.push(item);
                     }
@@ -3314,9 +3315,9 @@ ControllerMpd.prototype.listComposers = function () {
 
 /**
  *
- * list artist
+ * list composer
  */
-ControllerMpd.prototype.listArtist = function (curUri,index,previous,uriBegin) {
+ControllerMpd.prototype.listComposer = function (curUri,index,previous,uriBegin) {
 
     var self = this;
 
@@ -4087,7 +4088,9 @@ ControllerMpd.prototype.prefetch = function (trackBlock) {
 
 ControllerMpd.prototype.goto=function(data){
 	
-    if (data.type=='artist') {
+    if (data.type=='composer') {
+        return this.listComposer('composers://'+encodeURIComponent(data.value),2,'', 'albums://'+encodeURIComponent(data.value)+'/')
+	} else if (data.type=='artist') {
         return this.listArtist('artists://'+encodeURIComponent(data.value),2,'', 'albums://'+encodeURIComponent(data.value)+'/')
 	} else if (data.type=='album'){
         return this.listAlbumSongs("albums://"+encodeURIComponent(data.artist)+'/'+encodeURIComponent(data.album),2,'albums://'+encodeURIComponent(data.artist)+'/');
