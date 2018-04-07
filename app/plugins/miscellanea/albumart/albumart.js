@@ -201,11 +201,8 @@ var searchInFolder = function (defer, path, web, meta) {
 		 * Trying to read albumart from file
 		 */
 
-		var covers = ['coverart.jpg', 'albumart.jpg', 'coverart.png', 'albumart.png',
-			'cover.JPG' , 'Cover.JPG' , 'folder.JPG','Folder.JPG',
-			'cover.PNG' , 'Cover.PNG' , 'folder.PNG','Folder.PNG',
-			'cover.jpg', 'Cover.jpg', 'folder.jpg', 'Folder.jpg',
-			'cover.png', 'Cover.png', 'folder.png', 'Folder.png'];
+		var covers = ['front.jpg', 'front.png', 'folder.jpg', 'folder.png',
+			'cover.jpg', 'cover.jpg', 'cover.png'];
 		splitted = path.split('/');
 
 
