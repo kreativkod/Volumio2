@@ -2106,6 +2106,9 @@ ControllerMpd.prototype.explodeUri = function(uri) {
             defer.resolve(list);
         });
     }
+
+	// do I need an elseif for 'composers://'' here?
+
     else if(uri.startsWith('artists://')) {
         /*
          artists://AC%2FDC/Rock%20or%20Bust in service mpd
@@ -3219,27 +3222,6 @@ ControllerMpd.prototype.listAlbumSongs = function (uri,index,previous) {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  *
  * list composers
@@ -3300,7 +3282,7 @@ ControllerMpd.prototype.listComposers = function () {
                             title: artist,
                             albumart: albumart,
                             uri: 'composers://' + codedArtists       //PW: when this one is changed, the script hangs when click composer - goes back to throwing broswe error when 'goto function' is added to
-                        }										     //     "An error occurred when browsing the folder" 	
+                        }										     	
 
                         response.navigation.lists[0].items.push(item);
                     }
@@ -3396,7 +3378,7 @@ ControllerMpd.prototype.listComposer = function (curUri,index,previous,uriBegin)
 
 			self.clientMpd.sendCommand(cmd(findartist, []), function (err, msg) {
 
-				self.parseListAlbum(err,msg,defer,response,uriBegin,VA);
+				self.parseListAlbum(err,msg,defer,response,uriBegin,VA);  		// do I need to create a special parseListAlbum function for composers?
 
 				});
             }
@@ -3410,134 +3392,6 @@ ControllerMpd.prototype.listComposer = function (curUri,index,previous,uriBegin)
     return defer.promise;
 
 };
-
-ControllerMpd.prototype.parseListAlbum= function(err,msg,defer,response,uriBegin,VA) {
-
-    var self=this;
-    var list = [];
-    var albums=[],albumarts=[];
-    if (msg) {
-
-
-        var path;
-        var name;
-        var lines = msg.split('\n');
-
-        for (var i = 0; i < lines.length; i++) {
-            var line = lines[i];
-            if (line.indexOf('file:') === 0) {
-                var path = line.slice(6);
-                var name = path.split('/').pop();
-				if (VA === 1) {
-					var artist = self.searchFor(lines, i + 1, 'AlbumArtist:');
-				}
-				else {
-					var artist = self.searchFor(lines, i + 1, 'Artist:');
-				}
-                var album = self.searchFor(lines, i + 1, 'Album:');
-				var genre = self.searchFor(lines, i + 1, 'Genre:');
-			//Include track number if tracknumber variable is set to 'true'
-				if (!tracknumbers) {
-					var title = self.searchFor(lines, i + 1, 'Title:');
-				}
-				else {
-					var title1 = self.searchFor(lines, i + 1, 'Title:');
-					var track = self.searchFor(lines, i + 1, 'Track:');
-					var title = track + " - " + title1;
-				}
-                var albumart=self.getAlbumArt({artist: artist, album: album}, self.getParentFolder(path),'dot-circle-o');
-
-                if (title) {
-                    title = title;
-                } else {
-                    title = name;
-                }
-
-                response.navigation.lists[1].items.push({
-                    service: 'mpd',
-                    type: 'song',
-                    title: title,
-                    artist: artist,
-                    album: album,
-                    albumart: albumart,
-                    uri: 'music-library/'+path
-                });
-
-                // The first expression in the following "if" statement prevents dummy-albums from being
-                //  created for orphaned tracks (tracks without an album). Such dummy-albums aren't required,
-                //  as orphaned tracks remain accessible from the tracks-list.
-                if(album !== '' && albums.indexOf(album)===-1) {
-                    albums.push(album);
-                    albumarts.push();
-
-                    var uri;
-
-                    if(uriBegin==='artists://') {
-                        uri='artists://' + encodeURIComponent(artist) +'/'+encodeURIComponent(album);
-					}
-
-					else if (uriBegin==='genres://') {
-						uri='genres://' + genre + '/' + encodeURIComponent(artist) +'/'+encodeURIComponent(album);
-					}
-
-                    else {
-						uri=uriBegin + encodeURIComponent(album);
-					}
-
-                    response.navigation.lists[0].items.push(
-                        {
-                            service:'mpd',
-                            type: 'folder',
-                            title: album,
-							artist: artist,
-                            albumart: self.getAlbumArt({artist: artist, album: album}, self.getParentFolder(path),'dot-circle-o'),
-                            uri: uri
-                        });
-                }
-            }
-        }
-
-        defer.resolve(response);
-
-    }
-    else
-    {
-        self.logger.info(err);
-        defer.reject(new Error());
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**
